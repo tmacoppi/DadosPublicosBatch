@@ -1,34 +1,59 @@
 package com.dados.deputados.batch.downloader;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.nio.file.Paths;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
+@Slf4j
 public class FileDownloader {
     public static void downloadFiles(List<String> urls, String downloadDir) throws Exception {
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            for (String url : urls) {
-                HttpGet request = new HttpGet(url);
-                try (CloseableHttpResponse response = client.execute(request);
-                     InputStream in = response.getEntity().getContent()) {
 
-                    String fileName = Paths.get(url).getFileName().toString();
-                    FileOutputStream out = new FileOutputStream(downloadDir + "/" + fileName);
+        int retryMax = 3;
+        Path target;
+        String fileName;
+        HttpRequest request;
+        HttpClient httpClient = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
 
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, bytesRead);
+        for (String url : urls) {
+            fileName = url.substring(url.lastIndexOf('/') + 1);
+            target = Path.of(downloadDir.concat("/").concat(fileName));
+            request = HttpRequest.newBuilder(URI.create(url)).GET().build();
+
+            int retryCount = 0;
+
+            log.info("Download file: {}", url);
+
+            do {
+
+                try {
+                    //Download
+                    HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+                    log.info("Download response [{}]", response.statusCode());
+
+                    if (response.statusCode() != 200) {
+                        retryCount++;
+                        continue;
                     }
-                    out.close();
+                    Files.write(target, response.body(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+                    retryCount = retryMax;
+
+                } catch (Exception e) {
+                    //anImportFile.getResults().add("[Error: " + e.getMessage() + "]");
+                    log.error("[Error : download retries: " + retryCount + "][" + e.getMessage() + "]", e);
+                    retryCount++;
                 }
-            }
+
+            } while (retryCount < retryMax);
         }
     }
 }

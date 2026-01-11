@@ -3,41 +3,24 @@ package com.dados.deputados.batch;
 import com.dados.deputados.batch.downloader.FileDownloader;
 import com.dados.deputados.batch.extractor.ZipExtractor;
 import com.dados.deputados.batch.importer.CsvImporter;
+import com.dados.deputados.batch.util.PropertiesUtil;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        // Carregar application.properties
-        Properties props = new Properties();
-        try (InputStream input = App.class.getClassLoader()
-                .getResourceAsStream("application.properties")) {
-            if (input == null) {
-                throw new RuntimeException("Não foi possível encontrar application.properties");
-            }
-            props.load(input);
-        }
 
-        // Buscar valores configurados
-        String downloadDir = props.getProperty("csv.download.dir");
-        String extractDir = props.getProperty("csv.extract.dir");
-        String mongoUri = props.getProperty("mongodb.uri");
-        String mongoDb = props.getProperty("mongodb.database");
-        String mongoCollection = props.getProperty("mongodb.collection");
-
+        PropertiesUtil prop = new PropertiesUtil();
 
         // 1 - Download
-        FileDownloader.downloadFiles(getUrls(), downloadDir);
+        FileDownloader.downloadFiles(getUrls(), prop.getDownloadDir());
 
         // 2 - Extração
-        ZipExtractor.extractAll(downloadDir, extractDir);
+        ZipExtractor.extractAll(prop.getDownloadDir(), prop.getExtractDir());
 
         // 3 - Importação para MongoDB
-        //CsvImporter.importCsvFiles(extractDir, "minhaBase", "minhaColecao");
+        CsvImporter.importCsvFiles(prop.getExtractDir(), prop.getMongoDbHost(), prop.getMongoDbPort(), prop.getMongoDb());
     }
 
 

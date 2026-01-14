@@ -4,7 +4,8 @@ import com.dados.deputados.batch.config.DbConfig;
 import com.dados.deputados.batch.dao.DeputadoDAO;
 import com.dados.deputados.batch.model.Deputado;
 import com.dados.deputados.batch.model.ImportFile;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,10 +18,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-@Slf4j
 public class ImportDeputadoFileThread implements ImportFileThread {
 
     private final ImportFile anImportFile;
+
+    private static final Logger logger = LogManager.getLogger(ImportDeputadoFileThread.class);
 
     public ImportDeputadoFileThread(ImportFile anImportFile) {
         this.anImportFile = anImportFile;
@@ -58,8 +60,8 @@ public class ImportDeputadoFileThread implements ImportFileThread {
                                 lista.clear();
                             }
                         } catch (Exception e) {
-                            counters[1]++;
-                            log.error("[Error : {}][{}][{}]", lineNumber, e.getMessage(), linha, e);
+                            counters[1]++; //totalErrors
+                            logger.error("[Error : {}][{}][{}]", lineNumber, e.getMessage(), linha, e);
                         }
                     });
 
@@ -67,14 +69,18 @@ public class ImportDeputadoFileThread implements ImportFileThread {
                 dao.upsertBatch(c, lista);
                 c.commit();
             }
+
+            c.close();
         } catch (IOException e) {
             counters[1]++;
-            log.error("[Error : {}][{}]", lineNumber, e.getMessage(), e);
+            logger.error("[Error : {}][{}]", lineNumber, e.getMessage(), e);
         }
 
         anImportFile.setTotalImport(counters[0]);
         anImportFile.setTotalErrors(counters[1]);
         anImportFile.setFim(LocalDateTime.now());
+
+        logger.info("Import file: {} - {}", anImportFile.getFile().getName(), anImportFile.getTotalImport());
 
         return anImportFile;
     }

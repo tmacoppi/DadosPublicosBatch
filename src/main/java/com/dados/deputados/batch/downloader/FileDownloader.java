@@ -1,6 +1,7 @@
 package com.dados.deputados.batch.downloader;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,8 +12,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
-@Slf4j
 public class FileDownloader {
+
+    private static final Logger logger = LogManager.getLogger(FileDownloader.class);
+
     public static void downloadFiles(List<String> urls, String downloadDir) throws Exception {
 
         int retryMax = 3;
@@ -30,14 +33,14 @@ public class FileDownloader {
 
             int retryCount = 0;
 
-            log.info("Download file: {}", url);
+            logger.info("Download file: {}", url);
 
             do {
 
                 try {
                     //Download
                     HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
-                    log.info("Download response [{}]", response.statusCode());
+                    logger.info("Download response [{}]", response.statusCode());
 
                     if (response.statusCode() != 200) {
                         retryCount++;
@@ -49,7 +52,7 @@ public class FileDownloader {
 
                 } catch (Exception e) {
                     //anImportFile.getResults().add("[Error: " + e.getMessage() + "]");
-                    log.error("[Error : download retries: " + retryCount + "][" + e.getMessage() + "]", e);
+                    logger.error("[Error : download retries: {}][{}]", retryCount, e.getMessage(), e);
                     retryCount++;
                 }
 

@@ -1,8 +1,12 @@
 package com.dados.deputados.batch.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -27,7 +31,7 @@ public class Despesa {
     private String txtCNPJCPF;
     private String txtNumero;
     private Integer indTipoDocumento;
-    private LocalDateTime datEmissao;
+    private LocalDate datEmissao;
     private Double vlrDocumento;
     private Double vlrGlosa;
     private Double vlrLiquido;
@@ -36,9 +40,9 @@ public class Despesa {
     private Integer numParcela;
     private String txtPassageiro;
     private String txtTrecho;
-    private Integer numLote;
+    private BigDecimal numLote;
     private String numRessarcimento;
-    private LocalDateTime datPagamentoRestituicao;
+    private LocalDate datPagamentoRestituicao;
     private Double vlrRestituicao;
     private Integer nuDeputadoId;
     private Integer ideDocumento;
@@ -51,14 +55,14 @@ public class Despesa {
                 .txtFornecedor((String) dados.get("nomeFornecedor"))
                 .txtCNPJCPF((String) dados.get("cnpjCpfFornecedor"))
                 .indTipoDocumento((Integer) dados.get("codTipoDocumento"))
-                .datEmissao(dados.get("dataDocumento") != null ? LocalDateTime.parse((String) dados.get("dataDocumento")) : null)
+                .datEmissao(dados.get("dataDocumento") != null ? LocalDate.parse((String) dados.get("dataDocumento")) : null)
                 .vlrDocumento((Double) dados.get("valorDocumento"))
                 .vlrGlosa((Double) dados.get("valorGlosa"))
                 .vlrLiquido((Double) dados.get("valorLiquido"))
                 .numMes((Integer) dados.get("mes"))
                 .numAno((Integer) dados.get("ano"))
                 .numParcela((Integer) dados.get("parcela"))
-                .numLote((Integer) dados.get("codLote"))
+                .numLote(new BigDecimal((Integer)dados.get("codLote")))
                 .numRessarcimento((String) dados.get("numRessarcimento"))
                 .ideDocumento((Integer) dados.get("codDocumento"))
                 .urlDocumento((String) dados.get("urlDocumento"))
@@ -85,21 +89,21 @@ public class Despesa {
         return Despesa.builder()
                 .txNomeParlamentar(dados[0].trim())
                 .cpf(dados[1] != null ? dados[1] : null)
-                .ideCadastro(dados[2] != null ? Integer.parseInt(dados[2]) : 0)
+                .ideCadastro(dados[2] != null && !dados[2].isEmpty() ? Integer.parseInt(dados[2]) : 0)
                 .nuCarteiraParlamentar(dados[3] != null && !dados[3].isEmpty() ? Integer.parseInt(dados[3]) : 0)
                 .nuLegislatura(dados[4] != null ? Integer.parseInt(dados[4]) : 0)
                 .sgUF(dados[5])
                 .sgPartido(dados[6])
-                .codLegislatura(dados[7] != null ? Integer.parseInt(dados[7]) : 0)
-                .numSubCota(dados[8] != null ? Integer.parseInt(dados[8]) : 0)
+                .codLegislatura(dados[7] != null && !dados[7].isEmpty() ? Integer.parseInt(dados[7]) : 0)
+                .numSubCota(dados[8] != null && !dados[8].isEmpty() ? Integer.parseInt(dados[8]) : 0)
                 .txtDescricao(dados[9].trim())
-                .numEspecificacaoSubCota(dados[10] != null ? Integer.parseInt(dados[10]) : 0)
+                .numEspecificacaoSubCota(dados[10] != null && !dados[10].isEmpty() ? Integer.parseInt(dados[10]) : 0)
                 .txtDescricaoEspecificacao(dados[11].trim())
                 .txtFornecedor(dados[12].trim())
                 .txtCNPJCPF(dados[13])
                 .txtNumero(dados[14])
-                .indTipoDocumento(dados[15] != null ? Integer.parseInt(dados[15]) : 0)
-                .datEmissao(dados[16] != null && !dados[16].isEmpty() ? LocalDateTime.parse(dados[16]) : null)
+                .indTipoDocumento(dados[15] != null && !dados[15].isEmpty() ? Integer.parseInt(dados[15]) : 0)
+                .datEmissao(dados[16] != null && !dados[16].isEmpty() ? LocalDate.parse(dados[16].substring(0, 10)) : null)
                 .vlrDocumento(dados[17] != null ? Double.parseDouble(dados[17]) : 0)
                 .vlrGlosa(dados[18] != null ? Double.parseDouble(dados[18]) : 0)
                 .vlrLiquido(dados[19] != null ? Double.parseDouble(dados[19]) : 0)
@@ -108,9 +112,9 @@ public class Despesa {
                 .numParcela(dados[22] != null ? Integer.parseInt(dados[22]) : 0)
                 .txtPassageiro(dados[23])
                 .txtTrecho(dados[24])
-                .numLote(dados[25] != null ? Integer.parseInt(dados[25]) : 0)
+                .numLote(dados[25] != null ? new BigDecimal((dados[25])) : BigDecimal.ZERO)
                 .numRessarcimento(dados[26])
-                .datPagamentoRestituicao(dados[27] != null && !dados[27].isEmpty() ? LocalDateTime.parse(dados[27]) : null)
+                .datPagamentoRestituicao(dados[27] != null && !dados[27].isEmpty() ? LocalDate.parse(dados[27].substring(0, 10)) : null)
                 .vlrRestituicao(dados[28] != null && !dados[28].isEmpty() ? Double.parseDouble(dados[28]) : null)
                 .nuDeputadoId(dados[29] != null && !dados[29].isEmpty() ? Integer.parseInt(dados[29]) : 0)
                 .ideDocumento(dados[30] != null && !dados[30].isEmpty() ? Integer.parseInt(dados[30]) : 0)

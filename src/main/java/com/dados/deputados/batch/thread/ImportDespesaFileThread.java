@@ -1,14 +1,15 @@
 package com.dados.deputados.batch.thread;
 
+import com.dados.deputados.batch.config.DbConfig;
 import com.dados.deputados.batch.model.Despesa;
 import com.dados.deputados.batch.model.ImportFile;
-import com.mongodb.client.MongoCollection;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.Document;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +20,18 @@ import java.util.stream.Stream;
 public class ImportDespesaFileThread implements ImportFileThread {
 
     private final ImportFile anImportFile;
-    private final MongoCollection<Despesa> collection;
 
-    public ImportDespesaFileThread(ImportFile anImportFile, MongoCollection<Despesa> collection) {
+    public ImportDespesaFileThread(ImportFile anImportFile) {
         this.anImportFile = anImportFile;
-        this.collection = collection;
     }
 
     @Override
-    public ImportFile call() {
+    public ImportFile call() throws SQLException {
+        /*
+        Connection c = DbConfig.getConnection(); c.setAutoCommit(false);
+
+        DespesaDAO dao = new DespesaDAO();
+
         anImportFile.setInicio(LocalDateTime.now());
 
         Path target = Path.of(anImportFile.getExtractDir(), anImportFile.getFileName());
@@ -68,6 +72,9 @@ public class ImportDespesaFileThread implements ImportFileThread {
         anImportFile.setTotalImport(counters[0]);
         anImportFile.setTotalErrors(counters[1]);
         anImportFile.setFim(LocalDateTime.now());
+
+
+         */
 
         return anImportFile;
     }

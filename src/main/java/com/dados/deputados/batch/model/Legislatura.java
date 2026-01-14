@@ -2,19 +2,17 @@ package com.dados.deputados.batch.model;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.Document;
 
 import java.time.LocalDate;
 import java.util.Map;
 
-@EqualsAndHashCode(callSuper = true)
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Slf4j
-public class Legislatura extends Document {
+public class Legislatura {
 
     public int id;
     public String uri;

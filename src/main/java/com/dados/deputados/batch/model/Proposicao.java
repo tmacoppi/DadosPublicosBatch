@@ -2,20 +2,18 @@ package com.dados.deputados.batch.model;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.Document;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-@EqualsAndHashCode(callSuper = true)
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Slf4j
-public class Proposicao extends Document {
+public class Proposicao {
 
     public int id;
     public String uri;

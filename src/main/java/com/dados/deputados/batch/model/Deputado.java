@@ -1,7 +1,6 @@
 package com.dados.deputados.batch.model;
 
 import lombok.*;
-import org.bson.Document;
 
 import java.time.LocalDate;
 import java.util.List;

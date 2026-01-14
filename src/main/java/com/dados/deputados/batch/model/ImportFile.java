@@ -2,6 +2,7 @@ package com.dados.deputados.batch.model;
 
 import lombok.*;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,8 +13,7 @@ import java.util.List;
 @ToString
 public class ImportFile {
 
-    private String extractDir;
-    private String fileName;
+    private File file;
     private Long fileSize;
 
     private int totalImport;

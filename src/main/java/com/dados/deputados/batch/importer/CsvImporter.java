@@ -3,13 +3,6 @@ package com.dados.deputados.batch.importer;
 import com.dados.deputados.batch.model.ImportExecution;
 import com.dados.deputados.batch.model.ImportFile;
 import com.dados.deputados.batch.thread.ImportFileThreadFactory;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -22,20 +15,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
-
 public class CsvImporter {
-    public static void importCsvFiles(String extractDir, String mongoDbHost, String mongoDbPort, String mongoDb) throws Exception {
+    public static void importCsvFiles(String extractDir) throws Exception {
         ExecutorService executorImport = Executors.newFixedThreadPool(5);
+
         ImportExecution ie = ImportExecution.builder()
                 .startTime(LocalDateTime.now())
                 .importedFiles(new ArrayList<>())
                 .importedWebServices(new ArrayList<>())
                 .build();
 
-        //try (MongoClient mongoClient = MongoClients.create("mongodb://" + mongoDbHost + ":" + mongoDbPort)) {
-        MongoDatabase database = createDatabase(mongoDbHost, mongoDbPort, mongoDb); //mongoClient.getDatabase(mongoDb);
         List<Future<ImportFile>> futuresImport = new ArrayList<>();
         ImportFileThreadFactory importFileThreadFactory = new ImportFileThreadFactory();
 
@@ -46,11 +35,7 @@ public class CsvImporter {
 
             futuresImport.add(
                     executorImport.submit(
-                            importFileThreadFactory.createTask(ImportFile.builder()
-                                            .extractDir(extractDir)
-                                            .fileName(file.getName())
-                                    .build(),
-                                    database)));
+                            importFileThreadFactory.createTask(ImportFile.builder().file(file).build())));
 
             /*
             if (file.getName().endsWith(".csv")) {
@@ -79,30 +64,12 @@ public class CsvImporter {
         ie.setEndTime(LocalDateTime.now());
         ie.setTotalFileLines(totalFile.get());
 
-        MongoCollection<ImportExecution> collection = database.getCollection("import_execution", ImportExecution.class);
+        //MongoCollection<ImportExecution> collection = database.getCollection("import_execution", ImportExecution.class);
 
-        collection.insertOne(ie);
+        //collection.insertOne(ie);
 
         executorImport.shutdown();
     }
 
-    public static MongoDatabase createDatabase(String mongoDbHost, String mongoDbPort, String mongoDb) {
-        // URI de conexão (com usuário e senha, se necessário)
-        String uri = "mongodb://" + mongoDbHost + ":" + mongoDbPort + "/" + mongoDb; //"mongodb://localhost:27017/minhaBase";
-
-        CodecRegistry pojoCodecRegistry = fromRegistries(
-                MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build())
-        );
-
-        MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new com.mongodb.ConnectionString(uri))
-                .codecRegistry(pojoCodecRegistry)
-                .build();
-
-        MongoClient client = MongoClients.create(settings);
-
-        return client.getDatabase(mongoDb);
-    }
 }
 

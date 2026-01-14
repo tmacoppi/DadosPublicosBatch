@@ -2,9 +2,7 @@ package com.dados.deputados.batch.thread;
 
 import com.dados.deputados.batch.model.ImportFile;
 import com.dados.deputados.batch.model.Legislatura;
-import com.mongodb.client.MongoCollection;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.Document;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,15 +17,15 @@ import java.util.stream.Stream;
 public class ImportLegislaturaFileThread implements ImportFileThread {
 
     private final ImportFile anImportFile;
-    private final MongoCollection<Legislatura> collection;
 
-    public ImportLegislaturaFileThread(ImportFile anImportFile, MongoCollection<Legislatura> collection) {
+    public ImportLegislaturaFileThread(ImportFile anImportFile) {
         this.anImportFile = anImportFile;
-        this.collection = collection;
     }
 
     @Override
     public ImportFile call() {
+
+        /*
         anImportFile.setInicio(LocalDateTime.now());
 
         Path target = Path.of(anImportFile.getExtractDir(), anImportFile.getFileName());
@@ -68,6 +66,8 @@ public class ImportLegislaturaFileThread implements ImportFileThread {
         anImportFile.setTotalErrors(counters[1]);
         anImportFile.setFim(LocalDateTime.now());
 
+
+         */
         return anImportFile;
     }
 }

@@ -2,9 +2,7 @@ package com.dados.deputados.batch.thread;
 
 import com.dados.deputados.batch.model.ImportFile;
 import com.dados.deputados.batch.model.Proposicao;
-import com.mongodb.client.MongoCollection;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.Document;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,15 +17,14 @@ public class ImportProposicaoFileThread implements ImportFileThread {
 
     private final ImportFile anImportFile;
 
-    private final MongoCollection<Proposicao> collection;
-
-    public ImportProposicaoFileThread(ImportFile anImportFile, MongoCollection<Proposicao> collection) {
+    public ImportProposicaoFileThread(ImportFile anImportFile) {
         this.anImportFile = anImportFile;
-        this.collection = collection;
     }
 
     @Override
     public ImportFile call() {
+        /*
+
         anImportFile.setInicio(LocalDateTime.now());
 
         Path target = Path.of(anImportFile.getExtractDir(), anImportFile.getFileName());
@@ -88,6 +85,8 @@ public class ImportProposicaoFileThread implements ImportFileThread {
         anImportFile.setTotalErrors(counters[1]);
         anImportFile.setFim(LocalDateTime.now());
 
+
+         */
         return anImportFile;
     }
 }

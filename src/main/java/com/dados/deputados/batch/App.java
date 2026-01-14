@@ -1,9 +1,10 @@
 package com.dados.deputados.batch;
 
+import com.dados.deputados.batch.config.BatchProperties;
 import com.dados.deputados.batch.downloader.FileDownloader;
 import com.dados.deputados.batch.extractor.ZipExtractor;
 import com.dados.deputados.batch.importer.CsvImporter;
-import com.dados.deputados.batch.util.PropertiesUtil;
+import com.dados.deputados.batch.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,16 +12,14 @@ import java.util.List;
 public class App {
     public static void main(String[] args) throws Exception {
 
-        PropertiesUtil prop = new PropertiesUtil();
-
         // 1 - Download
-        FileDownloader.downloadFiles(getUrls(), prop.getDownloadDir());
+        FileDownloader.downloadFiles(getUrls(), BatchProperties.get("csv.download.dir"));
 
         // 2 - Extração
-        ZipExtractor.extractAll(prop.getDownloadDir(), prop.getExtractDir());
+        ZipExtractor.extractAll(BatchProperties.get("csv.download.dir"), BatchProperties.get("csv.extract.dir"));
 
         // 3 - Importação para MongoDB
-        CsvImporter.importCsvFiles(prop.getExtractDir(), prop.getMongoDbHost(), prop.getMongoDbPort(), prop.getMongoDb());
+        CsvImporter.importCsvFiles(BatchProperties.get("csv.extract.dir"));
     }
 
 

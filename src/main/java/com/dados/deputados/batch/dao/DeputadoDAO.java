@@ -2,10 +2,7 @@ package com.dados.deputados.batch.dao;
 
 import com.dados.deputados.batch.model.Deputado;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class DeputadoDAO {
@@ -41,7 +38,7 @@ public class DeputadoDAO {
     }
 
     private String getInsert() {
-        return "INSERT INTO dados_publicos.deputado " +
+        return "INSERT IGNORE INTO dados_publicos.deputado " +
                 "(id, uri, nome, siglaPartido, uriPartido, siglaUf, idLegislatura, idLegislaturaInicial, " +
                 "idLegislaturaFinal, urlFoto, email, nomeCivil, cpf, siglaSexo, urlWebsite, redeSocial, " +
                 "dataNascimento, dataFalecimento, ufNascimento, municipioNascimento, escolaridade) " +
@@ -65,8 +62,8 @@ public class DeputadoDAO {
         ps.setString(14, deputado.getSiglaSexo());
         ps.setString(15, deputado.getUrlWebsite());
         ps.setString(16, deputado.getRedeSocial() != null ? deputado.getRedeSocial().toString() : null);
-        ps.setString(17, deputado.getDataNascimento() != null ? deputado.getDataNascimento().toString() : null);
-        ps.setString(18, deputado.getDataFalecimento() != null ? deputado.getDataFalecimento().toString() : null);
+        ps.setDate(17, deputado.getDataNascimento() != null ? Date.valueOf(deputado.getDataNascimento()) : null);
+        ps.setDate(18, deputado.getDataFalecimento() != null ? Date.valueOf(deputado.getDataFalecimento()) : null);
         ps.setString(19, deputado.getUfNascimento());
         ps.setString(20, deputado.getMunicipioNascimento());
         ps.setString(21, deputado.getEscolaridade());

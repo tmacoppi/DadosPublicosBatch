@@ -54,6 +54,7 @@ public class ImportDeputadoFileThread implements ImportFileThread {
 
                             if (lista.size() >= bulkSize) {
                                 dao.upsertBatch(c, lista);
+                                c.commit();
                                 lista.clear();
                             }
                         } catch (Exception e) {
@@ -64,6 +65,7 @@ public class ImportDeputadoFileThread implements ImportFileThread {
 
             if (!lista.isEmpty()) {
                 dao.upsertBatch(c, lista);
+                c.commit();
             }
         } catch (IOException e) {
             counters[1]++;

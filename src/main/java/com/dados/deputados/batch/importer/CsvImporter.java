@@ -28,8 +28,6 @@ public class CsvImporter {
         List<Future<ImportFile>> futuresImport = new ArrayList<>();
         ImportFileThreadFactory importFileThreadFactory = new ImportFileThreadFactory();
 
-        //MongoCollection<Document> collection = database.getCollection(mongoDbCollection);
-
         File folder = new File(extractDir);
         for (File file : Objects.requireNonNull(folder.listFiles())) {
 
@@ -37,17 +35,6 @@ public class CsvImporter {
                     executorImport.submit(
                             importFileThreadFactory.createTask(ImportFile.builder().file(file).build())));
 
-            /*
-            if (file.getName().endsWith(".csv")) {
-                FileReader reader = new FileReader(file);
-                Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader);
-
-                for (CSVRecord record : records) {
-                    Document doc = new Document();
-                    record.toMap().forEach(doc::append);
-                    collection.insertOne(doc);
-                }
-            }*/
         }
 
         AtomicInteger totalFile = new AtomicInteger();
@@ -63,10 +50,6 @@ public class CsvImporter {
 
         ie.setEndTime(LocalDateTime.now());
         ie.setTotalFileLines(totalFile.get());
-
-        //MongoCollection<ImportExecution> collection = database.getCollection("import_execution", ImportExecution.class);
-
-        //collection.insertOne(ie);
 
         executorImport.shutdown();
     }

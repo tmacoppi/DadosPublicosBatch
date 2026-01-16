@@ -1,33 +1,42 @@
 package com.dados.deputados.batch.thread;
 
+import com.dados.deputados.batch.config.DbConfig;
+import com.dados.deputados.batch.dao.ProposicaoDAO;
 import com.dados.deputados.batch.model.ImportFile;
 import com.dados.deputados.batch.model.Proposicao;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public class ImportProposicaoFileThread implements ImportFileThread {
 
     private final ImportFile anImportFile;
+
+    private static final Logger logger = LogManager.getLogger(ImportProposicaoFileThread.class);
 
     public ImportProposicaoFileThread(ImportFile anImportFile) {
         this.anImportFile = anImportFile;
     }
 
     @Override
-    public ImportFile call() {
-        /*
+    public ImportFile call() throws SQLException {
+
+        Connection c = DbConfig.getConnection(); c.setAutoCommit(false);
+
+        ProposicaoDAO dao = new ProposicaoDAO();
 
         anImportFile.setInicio(LocalDateTime.now());
 
-        Path target = Path.of(anImportFile.getExtractDir(), anImportFile.getFileName());
+        Path target = anImportFile.getFile().toPath();
 
         int[] counters = new int[2]; // [0] imports, [1] errors
 
@@ -60,12 +69,13 @@ public class ImportProposicaoFileThread implements ImportFileThread {
                         counters[0]++;
 
                         if (lista.size() >= bulkSize) {
-                            collection.insertMany(lista);
+                            dao.upsertBatch(c, lista);
+                            c.commit();
                             lista.clear();
                         }
                     } catch (Exception e) {
                         counters[1]++;
-                        log.error("[Error : " + lineNumber + "][" + e.getMessage() + "][" + line + "]", e);
+                        logger.error("[Error : {}][{}][{}]", lineNumber, e.getMessage(), line, e);
                     }
                     insideRecord = false;
                 } else {
@@ -74,7 +84,8 @@ public class ImportProposicaoFileThread implements ImportFileThread {
             }
 
             if (!lista.isEmpty()) {
-                collection.insertMany(lista);
+                dao.upsertBatch(c, lista);
+                c.commit();
             }
         } catch (IOException e) {
             counters[1]++;
@@ -85,8 +96,8 @@ public class ImportProposicaoFileThread implements ImportFileThread {
         anImportFile.setTotalErrors(counters[1]);
         anImportFile.setFim(LocalDateTime.now());
 
+        logger.info("Import file: {} - {}", anImportFile.getFile().getName(), anImportFile.getTotalImport());
 
-         */
         return anImportFile;
     }
 }

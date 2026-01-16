@@ -55,11 +55,16 @@ public class ImportDespesaFileThread implements ImportFileThread {
                     .forEach(linha -> {
                         try {
                             if (!linha.endsWith("\"") || !linha.startsWith("\"")){
-                                logger.error("[Linha imcompleta : [{}][{}][{}]", lineNumber, anImportFile.getFile().getName(), linha);
+                                //logger.error("[Linha imcompleta : [{}][{}][{}]", lineNumber, anImportFile.getFile().getName(), linha);
+                                if (!linha.endsWith("\"")){
+                                    linhaImport.set(linha);
+                                } else if (!linha.startsWith("\"")){
+                                    lista.add(Despesa.fromArq(linhaImport.get().concat(linha)));
+                                    counters[0]++; // totalImport
+                                }
                             } else {
                                 lista.add(Despesa.fromArq(linha));
                                 counters[0]++; // totalImport
-
                             }
 
                             if (lista.size() >= bulkSize) {

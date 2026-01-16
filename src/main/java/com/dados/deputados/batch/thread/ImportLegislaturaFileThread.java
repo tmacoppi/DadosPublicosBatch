@@ -2,7 +2,6 @@ package com.dados.deputados.batch.thread;
 
 import com.dados.deputados.batch.model.ImportFile;
 import com.dados.deputados.batch.model.Legislatura;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-@Slf4j
 public class ImportLegislaturaFileThread implements ImportFileThread {
 
     private final ImportFile anImportFile;

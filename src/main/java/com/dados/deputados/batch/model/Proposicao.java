@@ -1,7 +1,6 @@
 package com.dados.deputados.batch.model;
 
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -12,7 +11,6 @@ import java.util.regex.Matcher;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Slf4j
 public class Proposicao {
 
     public int id;
@@ -109,20 +107,30 @@ public class Proposicao {
                 .urlInteiroTeor(dados[15])
                 .urnFinal(dados[16])
                 .ultimoStatus_dataHora(dados[17] != null ? LocalDateTime.parse(dados[17]) : null)
-                .ultimoStatus_sequencia(dados[18] != null ? Integer.parseInt(dados[18]) : 0)
-                .ultimoStatus_ideRelator(Integer.parseInt(dados[19].substring(dados[19].lastIndexOf('/') + 1)))
-                .ultimoStatus_idOrgao(dados[20] != null ? Integer.parseInt(dados[20]) : 0)
+                .ultimoStatus_sequencia(!dados[18].isEmpty() ? Integer.parseInt(dados[18]) : 0)
+                .ultimoStatus_ideRelator(getIdRelator(dados[19]))
+                .ultimoStatus_idOrgao(!dados[20].isEmpty() ? Integer.parseInt(dados[20]) : 0)
                 .ultimoStatus_siglaOrgao(dados[21])
                 .ultimoStatus_uriOrgao(dados[22])
                 .ultimoStatus_regime(dados[23])
                 .ultimoStatus_descricaoTramitacao(dados[24])
-                .ultimoStatus_idTipoTramitacao(dados[25] != null ? Integer.parseInt(dados[25]) : 0)
+                .ultimoStatus_idTipoTramitacao(!dados[25].isEmpty() ? Integer.parseInt(dados[25]) : 0)
                 .ultimoStatus_descricaoSituacao(dados[26])
-                .ultimoStatus_idSituacao(dados[27] != null ? Integer.parseInt(dados[27]) : 0)
+                .ultimoStatus_idSituacao(!dados[27].isEmpty() ? Integer.parseInt(dados[27]) : 0)
                 .ultimoStatus_despacho(dados[28])
                 .ultimoStatus_apreciacao(dados[29])
                 .ultimoStatus_url(dados[30])
                 .build();
 
+    }
+
+    private static int getIdRelator(String texto) {
+        if (texto.startsWith("https://")) {
+            return Integer.parseInt(texto.substring(texto.lastIndexOf('/') + 1));
+        } else if (!texto.isEmpty()){
+            Integer.parseInt(texto);
+        }
+
+        return 0;
     }
 }
